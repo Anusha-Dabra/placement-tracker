@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PlacementPal - Track your internship and placement applications with ease">
+    <meta name="keywords" content="placement, internship, job tracker, college, applications">
+    <meta name="author" content="PlacementPal">
+    <title>PlacementPal - Track Your Applications</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Notification Banner -->
+    <div id="notificationBanner" class="notification-banner">
+        <p id="bannerText"></p>
+        <button onclick="app.closeBanner()" aria-label="Close notification">✕</button>
+    </div>
+
+    <!-- Header -->
+    <header id="mainHeader" class="hidden">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="logo">PlacementPal</h1>
+                <div class="header-actions">
+                    <div class="notification-bell" onclick="app.toggleBanner()" role="button" tabindex="0" aria-label="Notifications">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span id="notificationBadge" class="notification-badge hidden">0</span>
+                    </div>
+                    <div class="user-menu">
+                        <button class="user-button" onclick="app.toggleUserMenu()" aria-label="User menu">
+                            <span id="currentUserName"></span>
+                            <span>▾</span>
+                        </button>
+                        <div id="userDropdown" class="user-dropdown" role="menu">
+                            <div id="otherUsers"></div>
+                            <button class="add-user" onclick="app.logout()">+ Add New User</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-card">
+            <h1>Welcome to PlacementPal</h1>
+            <p>Track your internships and placements with ease</p>
+            <input 
+                type="text" 
+                id="userNameInput" 
+                class="input" 
+                placeholder="Enter your name" 
+                onkeypress="app.handleWelcomeEnter(event)"
+                aria-label="Enter your name"
+            >
+            <button class="btn btn-primary" onclick="app.createUser()">Get Started</button>
+            <div id="existingUsers" class="mt-2"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <main id="mainApp" class="hidden">
+        <div class="container">
+            <!-- Stats Dashboard -->
+            <section class="stats-grid" aria-label="Application statistics">
+                <div class="stat-card" style="background: white;">
+                    <div class="stat-label">Total Tracked</div>
+                    <div class="stat-value" id="statTotal">0</div>
+                </div>
+                <div class="stat-card" style="background: #86EFAC;">
+                    <div class="stat-label">Applied</div>
+                    <div class="stat-value" id="statApplied">0</div>
+                </div>
+                <div class="stat-card" style="background: #FDE047;">
+                    <div class="stat-label">Interviews</div>
+                    <div class="stat-value" id="statInterviews">0</div>
+                </div>
+                <div class="stat-card" style="background: #F9A8D4;">
+                    <div class="stat-label">Offers</div>
+                    <div class="stat-value" id="statOffers">0</div>
+                </div>
+            </section>
+
+            <!-- Add Company Button -->
+            <button class="btn btn-primary" onclick="app.toggleForm()" aria-label="Add new company">
+                <span style="font-size: 1.25rem;">+</span> Add Company
+            </button>
+
+            <!-- Add/Edit Form -->
+            <section id="companyForm" class="form-card hidden" aria-label="Company form">
+                <h3 id="formTitle">Add New Company</h3>
+                <form onsubmit="app.saveCompany(event)">
+                    <div class="form-grid">
+                        <input type="text" id="companyName" class="input" placeholder="Company Name *" required aria-label="Company name">
+                        <input type="date" id="deadline" class="input" required aria-label="Application deadline">
+                    </div>
+                    
+                    <button type="button" class="toggle-details" onclick="app.toggleMoreDetails()" aria-expanded="false">
+                        More Details <span id="toggleIcon">▾</span>
+                    </button>
+
+                    <div id="moreDetails" class="more-details">
+                        <input type="text" id="role" class="input" placeholder="Role / Position" aria-label="Job role">
+                        <input type="text" id="stipend" class="input" placeholder="Stipend / Salary (e.g., ₹20,000/month)" aria-label="Stipend or salary">
+                        <input type="text" id="location" class="input" placeholder="Location" aria-label="Job location">
+                        <textarea id="notes" class="input" placeholder="Notes (referral contacts, skills needed, tips...)" aria-label="Additional notes"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Add Company</button>
+                        <button type="button" class="btn btn-secondary" onclick="app.cancelForm()">Cancel</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Filters and Sort -->
+            <div class="filter-bar" role="toolbar" aria-label="Filter and sort options">
+                <button class="filter-btn active" data-filter="all" onclick="app.setFilter('all')" aria-pressed="true">All</button>
+                <button class="filter-btn" data-filter="interested" onclick="app.setFilter('interested')" aria-pressed="false">Interested</button>
+                <button class="filter-btn" data-filter="applied" onclick="app.setFilter('applied')" aria-pressed="false">Applied</button>
+                <button class="filter-btn" data-filter="interview" onclick="app.setFilter('interview')" aria-pressed="false">Interview</button>
+                <button class="filter-btn" data-filter="offer" onclick="app.setFilter('offer')" aria-pressed="false">Offer</button>
+                <button class="filter-btn" data-filter="rejected" onclick="app.setFilter('rejected')" aria-pressed="false">Rejected</button>
+                
+                <span class="sort-label">SORT:</span>
+                <button class="sort-btn active" data-sort="deadline" onclick="app.setSort('deadline')" aria-pressed="true">Deadline</button>
+                <button class="sort-btn" data-sort="priority" onclick="app.setSort('priority')" aria-pressed="false">Priority</button>
+                <button class="sort-btn" data-sort="recent" onclick="app.setSort('recent')" aria-pressed="false">Recently Added</button>
+            </div>
+
+            <!-- Companies Grid -->
+            <div id="companiesGrid" class="companies-grid" role="list" aria-label="Company applications"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state hidden">
+                <img src="https://static.prod-images.emergentagent.com/jobs/bb2135b2-eb25-40e1-bd4d-51eb150daefb/images/b072e466a0231372db3235fffb5bc91e960e1c94c4d7b0668f3bc73967e98425.png" alt="Empty filing cabinet illustration">
+                <h3>No companies tracked yet</h3>
+                <p>Click "Add Company" to start tracking your applications</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
