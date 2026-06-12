@@ -1,10 +1,10 @@
-# 🎯 PlacementPal
+# PlacementPal
 
 A simple web app to track internship and placement applications — built for college students.
 
 Add a company, set a deadline, and get a reminder the day before it closes.
 
----
+
 
 ## Features
 - Add companies with just a name and deadline
